@@ -1,0 +1,13 @@
+如果迁移到其他电脑只需要备份如下目录即可：
+程序相关：
+    install.bat
+    run.bat
+    app.py
+    README.md
+    template(目录）
+知识内容
+   knowledge_base（这个目录里存放着所有的md文件）
+   
+以下目录不必备份，应用运行时会自动生成。
+   vector_db（存储向量数据库）
+   vector_json （存储每个md文件的json控制是否重新向量化）
