@@ -77,6 +77,18 @@ http://127.0.0.1/5000
 http://localhost:5000
 ```
 
+* 运行程序后自动生成：
+  
+  * `knowledge/` — 知识库数据目录
+  * `backup/` — 备份目录
+
+* 每个知识库自动生成：
+  
+  * `knowledge/名称/files/` 存放上传的 MD 文件
+  * `knowledge/名称/index.json` 搜索索引文件
+
+* **迁移时只需要复制整个 `knowledge/` 目录**，即可完整迁移所有数据。
+
 
 
 3. 关闭服务
