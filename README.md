@@ -17,7 +17,7 @@
 
 ------------
 
-确保已安装 Python 3.12 及以上版本。
+确保已安装 Python 3.12 及以上版本。当前使用的是：Python 3.12.10
 
 官网：[https://www.python.org/](https://www.python.org/)
 
