@@ -58,6 +58,9 @@ def export_all():
 BASE_FOLDER = "./knowledge_base"
 os.makedirs(BASE_FOLDER, exist_ok=True)
 
+os.makedirs("./vector_db", exist_ok=True)
+os.makedirs("./vector_json", exist_ok=True)
+
 def get_current_kb():
     return session.get("kb", "default")
 
@@ -65,10 +68,10 @@ def get_kb_path(kb_name):
     return os.path.join(BASE_FOLDER, kb_name)
 
 def get_kb_vector_path(kb_name):
-    return f"./vector_db_{kb_name}"
+    return f"./vector_db/{kb_name}"
 
 def get_md5_cache_path(kb_name):
-    return f"file_md5_cache_{kb_name}.json"
+    return f"./vector_json/file_md5_cache_{kb_name}.json"
 
 # ====================== 工具函数 ======================
 def simple_hash_vector(text: str, dim=48):
