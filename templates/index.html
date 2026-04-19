@@ -289,7 +289,7 @@ function exportAll() {
         }
 
   
-
+/*
         var html = '<!DOCTYPE html>';
         html += '<html lang="zh-CN">';
         html += '<head>';
@@ -334,21 +334,71 @@ function exportAll() {
         html += '<\/script>';
         html += '</body>';
         html += '</html>';
+        
+        */
+
+        var html = '<!DOCTYPE html>';
+        html += '<html lang="zh-CN">';
+        html += '<head>';
+        html += '<meta charset="UTF-8">';
+        html += '<title>' + kbName + ' 知识库</title>';
+        html += '<style>';
+        html += 'body{font-family:system-ui,sans-serif;background:#f5f7fa;margin:0;padding:20px;}';
+        html += '.container{max-width:1000px;margin:0 auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);}';
+        html += '.btn-wrap{margin-bottom:20px;gap:10px;display:flex;}';
+        html += '.btn{padding:8px 16px;border:none;border-radius:6px;cursor:pointer;}';
+        html += '.btn-blue{background:#409eff;color:#fff;}';
+        html += '.btn-green{background:#67c23a;color:#fff;}';
+        html += '.question{padding:12px 16px;background:#e8f3ff;border-radius:8px;margin:8px 0;cursor:pointer;font-weight:500;}';
+        html += '.answer{padding:12px 16px;display:none;line-height:1.8;}';
+        html += '.answer a{color:#0066cc;}';
+        html += '.answer code{background:#f4f4f4;padding:2px 4px;border-radius:3px;}';
+        html += '.answer pre{background:#f4f4f4;padding:12px;border-radius:6px;overflow-x:auto;}';
+        html += '</style>';
+        html += '</head>';
+        html += '<body>';
+        html += '<div class="container">';
+        html += '<h1>' + kbName + ' 知识库</h1>';
+
+        html += '<div class="btn-wrap">';
+        html += '<button class="btn btn-blue" onclick="openAll()">全部展开</button>';
+        html += '<button class="btn btn-blue" onclick="closeAll()">全部收起</button>';
+        html += '<button class="btn btn-green" onclick="downloadHtml()">下载HTML</button>';
+        html += '</div>';
+
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            html += '<div>';
+            html += '<div class="question" onclick="t(' + i + ')">' + item.question + '</div>';
+            html += '<div class="answer" id="a' + i + '">' + renderMd(item.answer) + '</div>';
+            html += '</div>';
+        }
+
+        html += '</div>';
+        html += '<script>';
+        html += 'var fileName="rxport_' + kbName.replace(/[\\/:*?"<>|]/g,'_') + '.html";';
+        html += 'function t(i){var e=document.getElementById(\'a\'+i);e.style.display=e.style.display==\'block\'?\'none\':\'block\';}';
+        html += 'function openAll(){document.querySelectorAll(\'.answer\').forEach(d=>d.style.display=\'block\');}';
+        html += 'function closeAll(){document.querySelectorAll(\'.answer\').forEach(d=>d.style.display=\'none\');}';
+        html += 'function downloadHtml(){';
+        html += 'var blob=new Blob([document.documentElement.outerHTML],{type:"text/html;charset=utf-8"});';
+        html += 'var url=URL.createObjectURL(blob);';
+        html += 'var a=document.createElement("a");';
+        html += 'a.href=url;a.download=fileName;a.click();';
+        html += 'URL.revokeObjectURL(url);';
+        html += '}';
+        html += '<\/script>';
+        html += '</body>';
+        html += '</html>';
 
         var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
         var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        var safeName = kbName.replace(/[\\/:*?"<>|]/g, '_');
-        a.download = "rxport_" + safeName + ".html";
-        a.href = url;
-        a.click();
+
+        // 仅新窗口打开，不再下载保存到本地
+        window.open(url, '_blank');
 
         setTimeout(function() {
-            window.open(url, '_blank');
-        }, 300);
-
-        setTimeout(function() {
-            URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
         }, 2000);
     });
 }
