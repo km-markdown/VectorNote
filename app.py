@@ -132,43 +132,65 @@ def save_md5_cache(kb, cache):
     with open(p, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
-# ====================== 增量构建索引 ======================
-def build_index_incremental():
+# ====================== 核心：增量索引（已支持覆盖删除） ======================
+def build_index_incremental(force_update_files=None):
     kb = get_current_kb()
     kb_path = get_kb_path(kb)
     os.makedirs(kb_path, exist_ok=True)
 
     cache = load_md5_cache(kb)
     files = [f for f in os.listdir(kb_path) if f.endswith(".md")]
+
     current_files = set(files)
     cached_files = set(cache.keys())
 
+    # 删除文件
     to_delete = [f for f in cached_files if f not in current_files]
+
+    # 更新文件
     to_update = []
 
     for fname in files:
         fp = os.path.join(kb_path, fname)
         md5 = get_file_md5(fp)
+
+        # 强制更新（覆盖上传）
+        if force_update_files and fname in force_update_files:
+            to_update.append(fname)
+            cache[fname] = md5
+            continue
+
         if cache.get(fname) != md5:
             to_update.append(fname)
             cache[fname] = md5
 
-    if to_delete:
-        for f in to_delete:
-            cache.pop(f, None)
-        client = chromadb.PersistentClient(path=get_kb_vector_path(kb))
-        try:
-            client.delete_collection(f"md_qa_{kb}")
-        except:
-            pass
-        to_update = files
-
-    if not to_update:
-        return
-
-    save_md5_cache(kb, cache)
     client = chromadb.PersistentClient(path=get_kb_vector_path(kb))
     coll = client.get_or_create_collection(name=f"md_qa_{kb}")
+
+    # ================= 删除已删除文件的向量 =================
+    if to_delete:
+        delete_ids = [f"doc_{f}" for f in to_delete]
+        try:
+            coll.delete(ids=delete_ids)
+            print("[删除文件向量]", delete_ids)
+        except Exception as e:
+            print("删除失败:", e)
+
+        for f in to_delete:
+            cache.pop(f, None)
+
+    # ================= 删除即将更新的旧向量（关键） =================
+    if to_update:
+        delete_ids = [f"doc_{f}" for f in to_update]
+        try:
+            coll.delete(ids=delete_ids)
+            print("[覆盖删除旧向量]", delete_ids)
+        except Exception as e:
+            print("删除旧向量失败:", e)
+
+    if not to_update:
+        save_md5_cache(kb, cache)
+        return
 
     ids = []
     embeddings = []
@@ -178,28 +200,33 @@ def build_index_incremental():
     for fname in to_update:
         fp = os.path.join(kb_path, fname)
         print(f"[索引] {fname}")
+
         try:
             with open(fp, "r", encoding="utf-8") as f:
                 lines = [l.rstrip("\n") for l in f if l.strip()]
+
             if not lines:
                 continue
 
             question = lines[0].strip()
             answer = "\n".join(lines[1:]).strip()
 
-            # ====================== 关键替换：语义向量 ======================
             vec = get_embedding(question)
 
             ids.append(f"doc_{fname}")
             embeddings.append(vec)
             metadatas.append({"file": fname, "answer": answer})
             documents.append(question)
+
         except Exception as e:
-            print(f"错误 {fname}: {e}")
+            print("错误:", e)
             continue
 
     if ids:
         coll.add(ids=ids, embeddings=embeddings, metadatas=metadatas, documents=documents)
+
+    save_md5_cache(kb, cache)
+
 
 # ====================== 路由 ======================
 @app.route("/")
@@ -230,12 +257,19 @@ def batch_upload():
     os.makedirs(kb_path, exist_ok=True)
 
     files = request.files.getlist("files")
+    updated_files = []
+
     for f in files:
         if f and f.filename.endswith(".md"):
             save_path = os.path.join(kb_path, f.filename)
+
+            if os.path.exists(save_path):
+                print(f"[覆盖上传] {f.filename}")
+                updated_files.append(f.filename)
+
             f.save(save_path)
 
-    build_index_incremental()
+    build_index_incremental(force_update_files=updated_files)
     return redirect(url_for("index"))
 
 @app.route("/delete/<filename>")
