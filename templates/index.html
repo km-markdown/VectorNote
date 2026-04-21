@@ -46,9 +46,9 @@
         }
         .result-header{
             display:flex;justify-content:space-between;align-items:center;
-            font-weight:500;cursor:pointer;
+            font-weight:500;cursor:pointer;background:#D7F2FA;color:#000;
         }
-        .distance{font-size:13px;color:#909399;font-weight:normal;}
+        .distance{font-size:13px;color:#222;font-weight:normal;}
         .answer-box{
             margin-top:12px;padding-top:12px;border-top:1px dashed #e4e7ed;
             display:none;line-height:1.8;font-size:15px;
@@ -173,6 +173,21 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
+
+// 回车触发搜索
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('query');
+
+    if (input) {
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                doSearch();
+            }
+        });
+    }
+});
+
 // 启用换行
 marked.setOptions({ breaks: true })
 
