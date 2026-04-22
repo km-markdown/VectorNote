@@ -100,9 +100,7 @@ pretrained_model
 ```bat
 chcp 65001
 cd C:\XX_DD\LLM_RAG\VectorNoteNew
-venv_VectorNote\Scripts\activate
-
-
+CALL venv_VectorNote\Scripts\activate
 python app.py
 ```
 
