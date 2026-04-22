@@ -75,6 +75,24 @@ pip install -U "sentence-transformers>=2.6.0"
 ### 3.3 启动项目（国内镜像）
 
 使用国内镜像加速模型下载，避免连接超时：
+在项目的根目录下载模型：运行 下载离线模型.bat
+模型下载后的目录结构如下：
+pretrained_model
+    |
+    |___all-MiniLM-L6-v2
+                    |
+                    |_——————1_Pooling
+                            config.json
+                            config_sentence_transformers.json
+                            data_config.json
+                            modules.json
+                            pytorch_model.bin
+                            sentence_bert_config.json
+                            special_tokens_map.json
+                            tokenizer.json
+                            tokenizer_config.json
+                            train_script.py
+                            vocab.txt
 
 ```bat
 chcp 65001
