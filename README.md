@@ -21,7 +21,7 @@ VectorNote 是基于 **Flask + Chroma 向量数据库 + 语义向量模型** 构
 
 ## 2. 环境依赖
 
-- Python 3.8+
+- Python 3.12.10
 - Flask
 - ChromaDB
 - Markdown
