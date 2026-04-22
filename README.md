@@ -77,6 +77,7 @@ pip install -U "sentence-transformers>=2.6.0"
 使用国内镜像加速模型下载，避免连接超时：
 在项目的根目录下载模型：运行 下载离线模型.bat
 模型下载后的目录结构如下：
+```
 pretrained_model
     |
     |___all-MiniLM-L6-v2
@@ -93,6 +94,8 @@ pretrained_model
                             tokenizer_config.json
                             train_script.py
                             vocab.txt
+```
+
 
 ```bat
 chcp 65001
