@@ -54,7 +54,7 @@ curl -L -o "%SAVE_DIR%\1_Pooling\config.json" "%BASE_URL%/1_Pooling/config.json"
 echo.
 echo ==============================================
 echo              所有文件下载完成！
-echo 模型路径：C:\data\pretrained_model\all-MiniLM-L6-v2
+echo 模型路径：pretrained_model\all-MiniLM-L6-v2
 echo ==============================================
 pause
 
